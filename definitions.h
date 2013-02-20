@@ -1,0 +1,6 @@
+#pragma once
+
+enum State {
+    INTITIALIZE, SEARCHING_FOR_OPP, TURNING_TO_FACE, CHARGING, GRAPPLING
+};
+

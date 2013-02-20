@@ -5,28 +5,27 @@
 /**************************************************************
  * Filename:
  * Contents:
- * 
+ *
  * Notes:    Target: Arduino UNO R1 & R2
  * Arduino IDE version: 0022
- * 
+ *
  * History:
  * when      who  what/why
- * 
+ *
  **************************************************************/
 
 /*---------------- Includes ---------------------------------*/
-//#include /*include the module's .h file*/
 
-/*---------------- Module Public Functions ---------------------------*/
+/*---------------- Main Code ---------------------------------*/
 
-/*---------------- Module Private Functions ---------------------------*/
 
-/*---------------- Test Harness ---------------------------*/
-
-#ifdef TESTING
-
-void main(void) {
-    //write test harness here
+void setup() {
+    Serial.begin(9600);
 }
 
-#endif /* TESTING */
+void loop() {
+    if (Serial.available()) {
+	char c = Serial.read();
+	Serial.println(c);
+    }
+}

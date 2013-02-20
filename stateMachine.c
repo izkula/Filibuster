@@ -5,19 +5,23 @@
 /**************************************************************
  * Filename:
  * Contents:
- * 
+ *
  * Notes:    Target: Arduino UNO R1 & R2
  * Arduino IDE version: 0022
- * 
+ *
  * History:
- * when      who  what/why
- * 
+ * when			who		what/why
+ *
  **************************************************************/
 
 /*---------------- Includes ---------------------------------*/
-//#include /*include the module's .h file*/
+#include "stateMachine.h"
 
 /*---------------- Module Public Functions ---------------------------*/
+
+void RunStateMachine() {
+    static State = INITIALIZE
+}
 
 /*---------------- Module Private Functions ---------------------------*/
 
