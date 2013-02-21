@@ -21,13 +21,17 @@
 #include "navigation.h"
 #include "keyboardEvents.h"
 #include "definitions.h"
+#include "initialize.h"
+#include <Arduino.h>
+#include <Timers.h>
 
 /*---------------- Module Level Defines ---------------------------------*/
 
 /*---------------- Module Level Variables ---------------------------*/
 
 /*---------------- Module Public Function Prototypes ---------------------------*/
-void RunStateMachine();
+void RunStateMachine(Strategy s);
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
+static void RunKeyboardDriveSM();
 

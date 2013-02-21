@@ -15,6 +15,8 @@
  **************************************************************/
 
 /*---------------- Includes ---------------------------------*/
+#include "definitions.h"
+#include "Arduino.h"
 
 /*---------------- Module Level Defines ---------------------------------*/
 
@@ -25,63 +27,17 @@
 #define DOWN_KEY 's'
 
 /*---------------- Module Level Variables ---------------------------*/
+static char time = 0;
 
 /*---------------- Module Public Function Prototypes ---------------------------*/
+//bool ParseKeyboardInput();
 
-/**returns whether the specified key has arrived on the serial line*/
-boolean TestForwardKeyPressed() {
+int GetInputTime();
 
-    if (Serial.available()) {
-	char c = Serial.read()
+bool TestTurnCommRecvd();
+bool TestMoveCommRecvd();
 
-	if (c == FORWARD_KEY) return true;
-	else return false;
-    }
-
-    return false;
-    
-}
-
-/**returns whether the specified key has arrived on the serial line*/
-boolean TestLeftKeyPressed() {
-    
-    if (Serial.available()) {
-	char c = Serial.read()
-	
-	if (c == LEFT_KEY) return true;
-	else return false;
-    }
-    
-    return false;
-    
-}
-
-/**returns whether the specified key has arrived on the serial line*/
-boolean TestRightKeyPressed() {
-    
-    if (Serial.available()) {
-	char c = Serial.read()
-	
-	if (c == RIGHT_KEY) return true;
-	else return false;
-    }
-    
-    return false;
-    
-}
-
-/**returns whether the specified key has arrived on the serial line*/
-boolean TestDownKeyPressed() {
-    
-    if (Serial.available()) {
-	char c = Serial.read()
-	
-	if (c == DOWN_KEY) return true;
-	else return false;
-    }
-    
-    return false;
-    
-}
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
+
+void ClearSerialBuffer();
