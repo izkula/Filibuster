@@ -20,78 +20,83 @@
 
 /*---------------- Module Public Functions ---------------------------*/
 
-/**Parses the serial input buffer one character at a time. Returns false if there was nothing to parse. Input times should be 0-9*/
-/* bool ParseKeyboardInput() {
-    while(Serial.available()) {
+//returns the the last command given
+char KeyboardEvents_GetComm() {
 
-	char c = Serial.read();
+    return comm;
+}
 
-	switch(c) {
+//returns the duration of the last command
+int KeyboardEvents_GetDuration() {
+
+    return duration;
+}
+
+bool KeyboardEvents_TestTurnCommRecvd() {
+
+    ParseInput();
+
+    if (comm == 'R' || comm == 'L') {
+	if (ready == true) {
+	    ready = false;
+	    return true;
+	}
+    }
+
+    return false;
+    
+}
+
+bool KeyboardEvents_TestMoveCommRecvd() {
+
+    ParseInput();
+
+    if (comm == 'F' || comm == 'B') {
+	if (ready == true) {
+	    ready = false;
+	    return true;
+	}
+    }
+
+    return false;
+
+}
+
+/**Parses the serial input buffer one character at a time. Returns false if there was nothing to parse.*/
+bool ParseInput() {
+
+    if (Serial.available()) {
+
+	//Serial.println("available!");
+	byte b = Serial.peek();
+
+	//reads in the command
+	switch(b) {
 	    case 'R':
 	    case 'L':
 	    case 'F':
 	    case 'B':
-		comm = c;
+		comm = Serial.read();
+		Serial.print("command '"); Serial.print((char) comm); Serial.println("' received!");
 		break;
-	    default: //anything besides R, L, F, B treated as a time number
-		time = c;
+	    case '#':
+		ready = true;
+		Serial.read();
 		break;
+	    default:
+		duration = Serial.read() - 48; //48 to account for ascii numbering
+		Serial.print("duration '"); Serial.print(duration); Serial.println("' received!");
+		break;
+
 	}
 
 	return true;
     }
 
-    return false; //nothing on serial buffer.
-} */
-
-int GetInputTime() {
-    return time;
-}
-
-bool TestTurnCommRecvd() {
-
-    if (Serial.available()) {
-	if (Serial.peek() == 'R' || Serial.peek() == 'L') {
-	    //discard the command character
-	    Serial.read();
-	    //read the command duration
-	    time = Serial.read();
-	    Serial.println(time);
-	    ClearSerialBuffer();
-	    
-	    return true;
-	}
-	
-	return false;
-    }
-
-    time = 0;
     return false;
-    
 }
 
-bool TestMoveCommRecvd() {
-    
-    if (Serial.available()) {
-	if (Serial.peek() == 'F' || Serial.peek() == 'B') {
-	    //discard the command character
-	    Serial.read();
-	    //read the command duration
-	    time = Serial.read();
-	    Serial.println(time);
-	    
-	    ClearSerialBuffer();
-	    
-	    return true;
-	}
 
-	return false;
-    }
-
-    time = 0;
-    return false;
-
-}
 
 /*---------------- Module Private Functions ---------------------------*/
 
@@ -101,6 +106,8 @@ void ClearSerialBuffer() {
 	Serial.read();
     }
 }
+
+
 
 
 /*---------------- Test Harness ---------------------------*/

@@ -27,17 +27,23 @@
 #define DOWN_KEY 's'
 
 /*---------------- Module Level Variables ---------------------------*/
-static char time = 0;
+static char comm = 0; //the command passed in by the keyboard
+static int duration = 0; //the amount of time to execute that command for, if relevant
+static bool ready = false; //a boolean to make sure the same command isn't read twice. Is set true upon reading a command (via parseInput), set false after testing for the command.
 
 /*---------------- Module Public Function Prototypes ---------------------------*/
-//bool ParseKeyboardInput();
 
-int GetInputTime();
+//Gets the last command input via the keyboard
+char KeyboardEvents_GetComm();
+//Gets the last duration input via the keyboard
+int KeyboardEvents_GetDuration();
 
-bool TestTurnCommRecvd();
-bool TestMoveCommRecvd();
-
+//checks to see if a turn command has been received and does the necessary book-keeping to make sure the same one is not read twice.
+bool KeyboardEvents_TestTurnCommRecvd();
+//checks to see if a move command has been received and does the necessary book-keeping to make sure the same one is not read twice.
+bool KeyboardEvents_TestMoveCommRecvd();
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
+static void ClearSerialBuffer();
+static bool ParseInput();
 
-void ClearSerialBuffer();
