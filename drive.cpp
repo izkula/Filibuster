@@ -19,12 +19,12 @@
 
 /*---------------- Module Public Functions ---------------------------*/
 
-/** Initializes the pins that the motors are being controlled by*/
+/** Initializes the pins that the motors are being controlled by as outputs. We should NOT initialize PWM pins as outputs in arduino.*/
 void Drive_InitMotors() {
-    pinMode(RIGHT_MOTORS_DIR_PIN, OUTPUT);
-    pinMode(LEFT_MOTORS_DIR_PIN, OUTPUT);
-    pinMode(RIGHT_MOTORS_ENABLE_PIN, OUTPUT);
-    pinMode(LEFT_MOTORS_ENABLE_PIN, OUTPUT);
+    pinMode(BL_MOTOR_DIR_PIN, OUTPUT);
+    pinMode(BR_MOTOR_DIR_PIN, OUTPUT);
+    pinMode(FL_MOTOR_DIR_PIN, OUTPUT);
+    pinMode(FR_MOTOR_DIR_PIN, OUTPUT);
    
 }
 
@@ -33,20 +33,28 @@ void Drive_Turn(Direction dir, int speed) {
     
     //turns the robot left at the specified speed.
     if (dir == LEFT) {
-	digitalWrite(RIGHT_MOTORS_DIR_PIN, HIGH);
-	digitalWrite(LEFT_MOTORS_DIR_PIN, LOW);
+	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
+	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
+	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
 	
-	analogWrite(RIGHT_MOTORS_ENABLE_PIN, speed);
-	analogWrite(LEFT_MOTORS_ENABLE_PIN, speed);
+	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(BR_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FR_MOTOR_ENABLE_PIN, speed);
     }
 
     //turns the robot right at the specified speed.
     else if (dir == RIGHT) {
-	digitalWrite(RIGHT_MOTORS_DIR_PIN, LOW);
-	digitalWrite(LEFT_MOTORS_DIR_PIN, HIGH);
+	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
+	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
 	
-	analogWrite(RIGHT_MOTORS_ENABLE_PIN, speed);
-	analogWrite(LEFT_MOTORS_ENABLE_PIN, speed);
+	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(BR_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FR_MOTOR_ENABLE_PIN, speed);
     }
 
 
@@ -61,22 +69,28 @@ void Drive_Move(Direction dir, int speed){
     
     //moves the robot forward at the specified speed
     if (dir == FORWARD) {
-	digitalWrite(RIGHT_MOTORS_DIR_PIN, HIGH);
-	digitalWrite(LEFT_MOTORS_DIR_PIN, HIGH);
+	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
 	
-	analogWrite(RIGHT_MOTORS_ENABLE_PIN, speed);
-	analogWrite(LEFT_MOTORS_ENABLE_PIN, speed);
+	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(BR_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FR_MOTOR_ENABLE_PIN, speed);
     }
 
     //moves the robot backwards at the specified speed.
     else if (dir == BACK) {
-	//turns of the other channel of the H-bridge to prevent shoot-through.
-	digitalWrite(LEFT_MOTORS_DIR_PIN, LOW);
-	digitalWrite(RIGHT_MOTORS_DIR_PIN, LOW);
+	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
+	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
+	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
+	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
 	
-	//turns the robot right.
-	analogWrite(LEFT_MOTORS_ENABLE_PIN, speed);
-	analogWrite(RIGHT_MOTORS_ENABLE_PIN, speed);
+	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
+	analogWrite(BR_MOTOR_ENABLE_PIN, speed);
+	analogWrite(FR_MOTOR_ENABLE_PIN, speed);
     }
 
     //give error if passed bad parameter
@@ -86,8 +100,10 @@ void Drive_Move(Direction dir, int speed){
 }
 
 void Drive_Stop() {
-    digitalWrite(LEFT_MOTORS_ENABLE_PIN, LOW);
-    digitalWrite(RIGHT_MOTORS_ENABLE_PIN, LOW);
+    digitalWrite(BL_MOTOR_ENABLE_PIN, LOW);
+    digitalWrite(FL_MOTOR_ENABLE_PIN, LOW);
+    digitalWrite(BR_MOTOR_ENABLE_PIN, LOW);
+    digitalWrite(FR_MOTOR_ENABLE_PIN, LOW);
 
 }
 /*---------------- Module Private Functions ---------------------------*/

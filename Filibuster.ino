@@ -19,8 +19,13 @@
 #include "definitions.h"
 #include <Timers.h>
 #include "drive.h"
+#include <AFMotor.h>
+
 
 /*---------------- Main Code ---------------------------------*/
+
+static AF_DCMotor motor1(1, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
+//static AF_DCMotor motor2(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
 
 
 void setup() {
@@ -29,24 +34,15 @@ void setup() {
     TMRArd_InitTimer(TURN_TIMER, 0);
 
     Drive_InitMotors();
+    //pinMode(RIGHT_MOTORS_DIR_PIN, OUTPUT);
+
+    motor1.setSpeed(255);
+    //motor2.setSpeed(255);
 }
 
 void loop() {
-    //RunStateMachine(KEYBOARD_DRIVE);
-    Drive_Move(FORWARD, 255);
-    Serial.println("Moving forward");
-    delay(3000);
-    Drive_Move(BACK, 255);
-    Serial.println("Moving back");
     
-    delay(3000);
-    Drive_Turn(LEFT, 255);
-    Serial.println("Turning left");
-    
-    delay(3000);
-    Drive_Turn(RIGHT, 255);
-    Serial.println("Turning right");
-    
-    delay(3000);
+    RunStateMachine(KEYBOARD_DRIVE);
+   
     
 }

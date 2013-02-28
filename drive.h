@@ -19,10 +19,16 @@
 #include <Arduino.h>
 
 /*---------------- Module Level Defines ---------------------------------*/
-#define RIGHT_MOTORS_DIR_PIN 2
-#define RIGHT_MOTORS_ENABLE_PIN 3
-#define LEFT_MOTORS_DIR_PIN 4
-#define LEFT_MOTORS_ENABLE_PIN 5
+
+//motor pin mappings
+#define BR_MOTOR_DIR_PIN 2
+#define BR_MOTOR_ENABLE_PIN 3
+#define BL_MOTOR_DIR_PIN 4
+#define BL_MOTOR_ENABLE_PIN 5
+#define FR_MOTOR_DIR_PIN 7
+#define FR_MOTOR_ENABLE_PIN 6
+#define FL_MOTOR_DIR_PIN 8
+#define FL_MOTOR_ENABLE_PIN 9
 
 /*---------------- Module Level Variables ---------------------------*/
 
