@@ -18,10 +18,34 @@
 /*---------------- Includes ---------------------------------*/
 #include <Timers.h>
 
+
+/*---------------- Arduino Pins ---------------------------*/
+#define IRFREQreadpin 2 //interrupt pin #0, digital pin #2
+
+#define s0 4 //The inputs from the arduino to the multiplexer
+#define s1 5 // to set which pin is being read
+#define s2 6
+#define s3 7
+
+
+/*---------------- Multiplex Pins ---------------------------*/
+#define backBeaconSensor  4
+#define backRightBeaconSensor  13
+#define frontRightBeaconSensor  10
+#define frontBeaconSensor  8
+#define frontLeftBeaconSensor  7
+#define backLeftBeaconSensor  3
+
+
+int numBeaconSensors = 6;
+int beaconSensorMultiplexPins[] = {frontBeaconSensor, frontRightBeaconSensor, 
+                              backRightBeaconSensor, backBeaconSensor, 
+                              backLeftBeaconSensor, frontLeftBeaconSensor};
+
  
+
 /*---------------- Module Defines ---------------------------*/
 #define numPulsesToAverage 9 //length of buffer that stores clock times from the interrupt function. This must be at least 3.
-#define IRFREQreadpin 2 //interrupt pin #0, digital pin #2
 #define MAXpulsebufferlength 200000 //in microseconds. max time between first and last entry in pulseBuffer.
                                       //if the span of the pulseBuffer is greater than this than the beacon
                                       //was likely turned off during detection
@@ -55,10 +79,18 @@ volatile int state = HIGH;
 boolean debug = true;
 int frequency = 850;
 
+int beaconSensorCounter = 0;
+
+
 void setup()
 {
   pinMode(IRFREQreadpin, INPUT);
   
+  pinMode(s0, OUTPUT);
+  pinMode(s1, OUTPUT);
+  pinMode(s2, OUTPUT);
+  pinMode(s3, OUTPUT);
+
   pinMode(LEDTestPin, OUTPUT);
   pinMode(4, OUTPUT);
   tone(LEDTestPin, frequency); //Outputs a square wave to test the program
@@ -73,10 +105,127 @@ void loop()
 {
   int freq = PULSEFREQ_frequency();
   if (freq > 0) {
-    Serial.print("Frequency: ");
+    Serial.print("Multiplex: ");
+    Serial.print(beaconSensorCounter);
+    Serial.print(" Frequency: ");
     Serial.println(freq);
+
   }
   delay(100);
+  
+  setMultiplex(beaconSensorMultiplexPins[beaconSensorCounter]);
+  beaconSensorCounter = 5;
+
+  //beaconSensorCounter = (beaconSensorCounter + 1)%numBeaconSensors;
+}
+
+void setMultiplex(int multiplex_pin_number)
+{
+   
+   switch(multiplex_pin_number) {
+     case 0:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      break;
+   case 1:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      break;
+   case 2:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      break;
+   case 3:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      break;
+   case 4:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, LOW);
+      break;
+   case 5:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, LOW);
+      break;
+   case 6:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, LOW);
+      break;
+   case 7:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, LOW);
+      break;
+   case 8:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, HIGH);
+      break;
+   case 9:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, HIGH);
+      break;
+   case 10:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, HIGH);
+      break;
+   case 11:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, HIGH);
+      break;
+   case 12:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, HIGH);
+      break;
+   case 13:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, HIGH);
+      break;
+    case 14:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, HIGH);
+      break;
+    case 15:
+      digitalWrite(s0, HIGH);
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, HIGH);
+      break;
+    default:
+      digitalWrite(s0, LOW);
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      break;
+   }
 }
 
 void PULSEFREQ_detected() { //callback function that stores the time of the interrupt
