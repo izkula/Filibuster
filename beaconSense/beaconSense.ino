@@ -22,10 +22,14 @@
 /*---------------- Arduino Pins ---------------------------*/
 #define IRFREQreadpin 2 //interrupt pin #0, digital pin #2
 
+//Output to multiplexer
 #define s0 4 //The inputs from the arduino to the multiplexer
 #define s1 5 // to set which pin is being read
 #define s2 6
 #define s3 7
+
+#define LEDTestPin 12                                     
+
 
 
 /*---------------- Multiplex Pins ---------------------------*/
@@ -42,6 +46,7 @@ int beaconSensorMultiplexPins[] = {frontBeaconSensor, frontRightBeaconSensor,
                               backRightBeaconSensor, backBeaconSensor, 
                               backLeftBeaconSensor, frontLeftBeaconSensor};
 
+
  
 
 /*---------------- Module Defines ---------------------------*/
@@ -53,7 +58,6 @@ int beaconSensorMultiplexPins[] = {frontBeaconSensor, frontRightBeaconSensor,
                                      // the last second.
                                      
                                  
-#define LEDTestPin 13                                     
 
 //TO IDENTIFY BEACON TYPE
 #define BOTH 3 //Need to be able to account for both beacons being in field of view
@@ -69,7 +73,7 @@ boolean PULSEFREQ_scanning = false; // 'true' if the interrupt is enabled
 /* Function prototypes */
 void PULSEFREQ_startscanning(void);
 void PULSEFREQ_stopscanning(void);
-void PULSEFREQ_detected(void);
+void PULSEFREQ_detected(void); //interrupt callback function
 unsigned long PULSEFREQ_period(void);
 int PULSEFREQ_frequency(void);
 int PULSEFREQ_beacontype(int pulsefreq);
@@ -79,21 +83,23 @@ volatile int state = HIGH;
 boolean debug = true;
 int frequency = 850;
 
-int beaconSensorCounter = 0;
+
 
 
 void setup()
 {
   pinMode(IRFREQreadpin, INPUT);
   
+  //Pins to controller the multiplexer
   pinMode(s0, OUTPUT);
   pinMode(s1, OUTPUT);
   pinMode(s2, OUTPUT);
   pinMode(s3, OUTPUT);
 
+  //For testing
   pinMode(LEDTestPin, OUTPUT);
-  pinMode(4, OUTPUT);
-  tone(LEDTestPin, frequency); //Outputs a square wave to test the program
+  //pinMode(4, OUTPUT);
+  //tone(LEDTestPin, frequency); //Outputs a square wave to test the program
 
   
   PULSEFREQ_startscanning();
@@ -103,21 +109,214 @@ void setup()
 
 void loop()
 {
+  angleToBeacon();
+  /*
+  //Serial.println(beaconSensorCounter);
+  delay(20);
+
+  
   int freq = PULSEFREQ_frequency();
   if (freq > 0) {
-    Serial.print("Multiplex: ");
     Serial.print(beaconSensorCounter);
-    Serial.print(" Frequency: ");
-    Serial.println(freq);
-
+    printBeaconSensor(beaconSensorCounter);
+//    Serial.print(" Frequency: ");
+//    Serial.println(freq);
   }
-  delay(100);
-  
-  setMultiplex(beaconSensorMultiplexPins[beaconSensorCounter]);
-  beaconSensorCounter = 5;
-
-  //beaconSensorCounter = (beaconSensorCounter + 1)%numBeaconSensors;
+  if ((830 < freq && freq < 870)) { // || (320 < freq && 360 > freq)) {
+    Serial.println("YES");
+    digitalWrite(LEDTestPin, HIGH);
+  } else if ((3900 < freq && freq < 4100)) {   //  || (1900 < freq && 2100 > freq)) {
+    Serial.println("YES");
+    digitalWrite(LEDTestPin, HIGH);
+  } else {
+    Serial.println("NO");
+    digitalWrite(LEDTestPin, LOW);
+  }
+  */
 }
+
+
+int angleToBeacon(void) 
+{
+  bool sensorValue[numBeaconSensors];
+  int beaconSensorCounter = 0; //to iterate through the detectors through the multiplexer
+  
+  for(int i = 0; i< numBeaconSensors; i++) {
+    beaconSensorCounter = i;
+    setMultiplex(beaconSensorMultiplexPins[beaconSensorCounter]);
+    delay(50);
+    sensorValue[i] = PULSEFREQ_beacontype();
+    printBeaconSensor(i);
+    Serial.print(sensorValue[i]);
+  }
+  Serial.println();
+  
+  float angle = 0.0;
+  int numOnSensors = 0;
+  int sensorValueOn = 0;
+  float dDegrees = 360.0/numBeaconSensors;
+  for (int i=0; i < numBeaconSensors; i++) {
+    if( sensorValue[i] != 0) {
+      numOnSensors += 1;
+      sensorValueOn = 1;
+      angle += (i*dDegrees);
+      if (i == (numBeaconSensors - 1) && sensorValue[0] != 0) {
+        angle += 360.0;
+      }
+    } else {
+      sensorValueOn = 0;
+    }
+  }
+  float avgAngle = angle/numOnSensors;  
+  Serial.println(avgAngle);
+  return avgAngle;
+}
+
+
+
+void printBeaconSensor(int beaconSensorNumber)
+{
+  switch(beaconSensorNumber) {
+   case 0:
+    Serial.print("  Front       ");
+    break;
+   case 1:
+    Serial.print("  Front Right ");
+    break;
+   case 2:
+    Serial.print("  Back Right  ");
+    break;
+   case 3:
+    Serial.print("  Back        ");
+    break;
+   case 4:
+    Serial.print("  Back Left   ");
+    break;
+   case 5:
+    Serial.print("  Front Left   ");
+    break;
+    
+  }
+  
+}
+
+
+
+void PULSEFREQ_detected() { //callback function that stores the time of the interrupt
+  PULSEFREQ_pulsestream[PULSEFREQ_bufferindex] = micros();
+  PULSEFREQ_bufferindex = (PULSEFREQ_bufferindex + 1) % numPulsesToAverage;
+}
+
+void PULSEFREQ_startscanning(void) {
+  PULSEFREQ_bufferindex = 0; //set initial psoition in the pulse buffer array to 0
+  PULSEFREQ_scanning = true;
+  attachInterrupt(IRFREQreadpin-2, PULSEFREQ_detected, RISING); //Pin #2 is interrupt #0
+}
+
+void PULSEFREQ_stopscanning(void) {
+  detachInterrupt(IRFREQreadpin -2 );
+  PULSEFREQ_scanning = false;
+}
+
+unsigned long PULSEFREQ_period(void) { //in microseconds
+  //Calculate the average period. This will deal with the case of two beacons overlapping.
+
+  unsigned long sum = 0; //sum all pulse times in the pulseBuffer
+  if(PULSEFREQ_scanning != true) {
+    //Serial.println("Interrupt not currently turned on. Cannot calculate PULSEFREQ_period.");
+    return 0;
+  }
+  PULSEFREQ_stopscanning();
+  //We are doing a simple version of averaging = (last - first)/sizeOfBuffer
+  unsigned long time_span_of_buffer = PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex - 1 + numPulsesToAverage)
+                                      %numPulsesToAverage]
+                                      - PULSEFREQ_pulsestream[PULSEFREQ_bufferindex];
+  unsigned long actual_time_span = micros() - PULSEFREQ_pulsestream[PULSEFREQ_bufferindex]; //This is to ensure that the buffer was actually recently written to, that the values are not old
+
+  if (time_span_of_buffer > MAXpulsebufferlength) {
+    //Serial.println("Time between detected rising edges is too long.");
+    PULSEFREQ_startscanning();
+    return 0;
+  }
+   
+  if (actual_time_span > MAXpulseactualtime) {
+    Serial.println("Time since last detected rising edge has been too long.");
+    PULSEFREQ_startscanning();
+    return 0;
+  }  
+
+  //To account for overlapping beacons, determine the average period between three pulses,
+  // calculated starting at five consecutive indices. If all five average periods match
+  // then we are seeing just one beacon. If they do not all match, then we are seeing two beacons.
+  // STILL NEED TO TEST THIS WITH TWO BEACONS!!
+  
+  boolean accountForOverlappingBeacons = false; //This part may not completely work, so set to false to revert to older, robust version
+  if(accountForOverlappingBeacons) {
+ 
+    int numPulsesInSubset = 3;
+    int numSubsets = numPulsesToAverage - numPulsesInSubset;
+    unsigned long avg_periods[numSubsets];
+    for (int i=0; i<numSubsets; i++) {
+       avg_periods[i] = (PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex + i + numPulsesInSubset + numPulsesToAverage)%numPulsesToAverage] - 
+                          PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex + i + numPulsesToAverage)%numPulsesToAverage]);
+       avg_periods[i] = avg_periods[i]/(numPulsesInSubset);
+    }
+    
+    int errorMargin = 10; //How far apart two consecutive measured periods can be (in microseconds).
+    for (int k=1; k<numSubsets; k++) {
+   // Serial.print("periods: "); Serial.print(avg_periods[k-1]); Serial.print(" "); Serial.println(avg_periods[k]);
+      if ( ( avg_periods[k-1] > avg_periods[k] && (avg_periods[k-1] - avg_periods[k]) > errorMargin )
+           || ( avg_periods[k] > avg_periods[k-1] && (avg_periods[k] - avg_periods[k-1]) > errorMargin ) ){
+       Serial.println("There are two beacons!");
+       PULSEFREQ_startscanning();
+       return BOTH; //With BOTH set at 3, we are assuming that we will never see a signal with a period of 3 microseconds (or 333kHz)
+      }
+    }
+    PULSEFREQ_startscanning();
+    return avg_periods[0];
+  } else {
+     // This line below does not account for the case of overlapping beacons
+    unsigned long average_time_between_pulses = time_span_of_buffer/(numPulsesToAverage-1);
+    PULSEFREQ_startscanning();
+    return average_time_between_pulses;
+  }
+}
+
+int PULSEFREQ_frequency(void) {
+  if(PULSEFREQ_scanning != true) {
+    Serial.println("Interrupt not currently turned on. Cannot calculate PULSEFREQ_frequency.");
+    return 0;
+  }
+     
+  unsigned long avgperiod = PULSEFREQ_period();
+  
+  if (avgperiod == BOTH) {
+    return BOTH; //Again, with BOTH set at 3, we are assuming that we will never see a signal with a period of 3 microseconds (or 333kHz)
+  }
+  if(( int(avgperiod) < 100000 ) && (int(avgperiod) > 0)) {
+      int freq = 1000000/int(avgperiod); //remember that the period was in microseconds
+      return freq;
+  } else {
+    return 0;
+  }
+}
+  
+int PULSEFREQ_beacontype(void) {
+  int freq = PULSEFREQ_frequency();
+  
+  if (freq == BOTH) {
+    return BOTH;
+  }
+  if ((830 < freq && freq < 870)) { // || (320 < freq && 360 > freq)) {
+    return ENEMY;
+  } else if ((3900 < freq && freq < 4100)) {   //  || (1900 < freq && 2100 > freq)) {
+    return SEQUESTER;
+  } else {
+    return NEITHER;
+  }
+}
+
+
 
 void setMultiplex(int multiplex_pin_number)
 {
@@ -226,118 +425,5 @@ void setMultiplex(int multiplex_pin_number)
       digitalWrite(s3, LOW);
       break;
    }
-}
-
-void PULSEFREQ_detected() { //callback function that stores the time of the interrupt
-  PULSEFREQ_pulsestream[PULSEFREQ_bufferindex] = micros();
-  PULSEFREQ_bufferindex = (PULSEFREQ_bufferindex + 1) % numPulsesToAverage;
-}
-
-void PULSEFREQ_startscanning(void) {
-  PULSEFREQ_bufferindex = 0; //set initial psoition in the pulse buffer array to 0
-  PULSEFREQ_scanning = true;
-  attachInterrupt(IRFREQreadpin-2, PULSEFREQ_detected, RISING); //Pin #2 is interrupt #0
-}
-
-void PULSEFREQ_stopscanning(void) {
-  detachInterrupt(IRFREQreadpin -2 );
-}
-
-unsigned long PULSEFREQ_period(void) { //in microseconds
-  //Calculate the average period. This will deal with the case of two beacons overlapping.
-
-  unsigned long sum = 0; //sum all pulse times in the pulseBuffer
-  if(PULSEFREQ_scanning != true) {
-    Serial.println("Interrupt not currently turned on. Cannot calculate PULSEFREQ_period.");
-    return 0;
-  }
-  PULSEFREQ_stopscanning();
-  unsigned long time_span_of_buffer = PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex - 1 + numPulsesToAverage)
-                                      %numPulsesToAverage]
-                                      - PULSEFREQ_pulsestream[PULSEFREQ_bufferindex];
-  unsigned long actual_time_span = micros() - PULSEFREQ_pulsestream[PULSEFREQ_bufferindex];
-
-  if (time_span_of_buffer > MAXpulsebufferlength) {
-    Serial.println("Time between detected rising edges is too long.");
-    PULSEFREQ_startscanning();
-    return 0;
-  }
-   
-  if (actual_time_span > MAXpulseactualtime) {
-    Serial.println("Time since last detected rising edge has been too long.");
-    PULSEFREQ_startscanning();
-    return 0;
-  }  
-
-  //To account for overlapping beacons, determine the average period between three pulses,
-  // calculated starting at five consecutive indices. If all five average periods match
-  // then we are seeing just one beacon. If they do not all match, then we are seeing two beacons.
-  // STILL NEED TO TEST THIS WITH TWO BEACONS!!
-  
-  boolean accountForOverlappingBeacons = false; //This part may not completely work, so set to false to revert to older, robust version
-  if(accountForOverlappingBeacons) {
- 
-    int numPulsesInSubset = 3;
-    int numSubsets = numPulsesToAverage - numPulsesInSubset;
-    unsigned long avg_periods[numSubsets];
-    for (int i=0; i<numSubsets; i++) {
-       avg_periods[i] = (PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex + i + numPulsesInSubset + numPulsesToAverage)%numPulsesToAverage] - 
-                          PULSEFREQ_pulsestream[(PULSEFREQ_bufferindex + i + numPulsesToAverage)%numPulsesToAverage]);
-       avg_periods[i] = avg_periods[i]/(numPulsesInSubset);
-    }
-    
-    int errorMargin = 10; //How far apart two consecutive measured periods can be (in microseconds).
-    for (int k=1; k<numSubsets; k++) {
-   // Serial.print("periods: "); Serial.print(avg_periods[k-1]); Serial.print(" "); Serial.println(avg_periods[k]);
-      if ( ( avg_periods[k-1] > avg_periods[k] && (avg_periods[k-1] - avg_periods[k]) > errorMargin )
-           || ( avg_periods[k] > avg_periods[k-1] && (avg_periods[k] - avg_periods[k-1]) > errorMargin ) ){
-       Serial.println("There are two beacons!");
-       PULSEFREQ_startscanning();
-       return BOTH; //With BOTH set at 3, we are assuming that we will never see a signal with a period of 3 microseconds (or 333kHz)
-      }
-    }
-    PULSEFREQ_startscanning();
-    return avg_periods[0];
-  } else {
-     // This line below does not account for the case of overlapping beacons
-    unsigned long average_time_between_pulses = time_span_of_buffer/(numPulsesToAverage-1);
-    PULSEFREQ_startscanning();
-    return average_time_between_pulses;
-  }
-}
-
-int PULSEFREQ_frequency(void) {
-  if(PULSEFREQ_scanning != true) {
-    Serial.println("Interrupt not currently turned on. Cannot calculate PULSEFREQ_frequency.");
-    return 0;
-  }
-    
-  
-  unsigned long avgperiod = PULSEFREQ_period();
-  
-  if (avgperiod == BOTH) {
-    return BOTH; //Again, with BOTH set at 3, we are assuming that we will never see a signal with a period of 3 microseconds (or 333kHz)
-  }
-  if(( int(avgperiod) < 100000 ) && (int(avgperiod) > 0)) {
-      int freq = 1000000/int(avgperiod);
-      return freq;
-  } else {
-    return 0;
-  }
-}
-  
-int PULSEFREQ_beacontype(void) {
-  int freq = PULSEFREQ_frequency();
-  
-  if (freq == BOTH) {
-    return BOTH;
-  }
-  if ((830 < freq && freq < 870) || (320 < freq && 360 > freq)) {
-    return ENEMY;
-  } else if ((4900 < freq && freq < 5100) || (1900 < freq && 2100 > freq)) {
-    return SEQUESTER;
-  } else {
-    return NEITHER;
-  }
 }
 
