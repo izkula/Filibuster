@@ -33,10 +33,16 @@ void Drive_Turn(Direction dir, int speed) {
     
     //turns the robot left at the specified speed.
     if (dir == LEFT) {
-	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
-	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
-	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(BL_MOTOR_DIR_PIN, BL_BWD);
+	digitalWrite(FL_MOTOR_DIR_PIN, FL_BWD);
+	digitalWrite(BR_MOTOR_DIR_PIN, BR_FWD);
+	digitalWrite(FR_MOTOR_DIR_PIN, FR_FWD);
+
+
+// 	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
 	
 	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
 	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
@@ -46,10 +52,15 @@ void Drive_Turn(Direction dir, int speed) {
 
     //turns the robot right at the specified speed.
     else if (dir == RIGHT) {
-	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
-	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
+	digitalWrite(BL_MOTOR_DIR_PIN, BL_FWD);
+	digitalWrite(FL_MOTOR_DIR_PIN, FL_FWD);
+	digitalWrite(BR_MOTOR_DIR_PIN, BR_BWD);
+	digitalWrite(FR_MOTOR_DIR_PIN, FR_BWD);
+
+// 	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
 	
 	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
 	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
@@ -69,10 +80,15 @@ void Drive_Move(Direction dir, int speed){
     
     //moves the robot forward at the specified speed
     if (dir == FORWARD) {
-	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
-	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
+	digitalWrite(BL_MOTOR_DIR_PIN, BL_FWD);
+	digitalWrite(FL_MOTOR_DIR_PIN, FL_FWD);
+	digitalWrite(BR_MOTOR_DIR_PIN, BR_FWD);
+	digitalWrite(FR_MOTOR_DIR_PIN, FR_FWD);
+
+// 	digitalWrite(BL_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(FL_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(BR_MOTOR_DIR_PIN, HIGH);
+// 	digitalWrite(FR_MOTOR_DIR_PIN, HIGH);
 	
 	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
 	analogWrite(FL_MOTOR_ENABLE_PIN, speed);
@@ -82,10 +98,15 @@ void Drive_Move(Direction dir, int speed){
 
     //moves the robot backwards at the specified speed.
     else if (dir == BACK) {
-	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
-	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
-	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
-	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
+	digitalWrite(BL_MOTOR_DIR_PIN, BL_BWD);
+	digitalWrite(FL_MOTOR_DIR_PIN, FL_BWD);
+	digitalWrite(BR_MOTOR_DIR_PIN, BR_BWD);
+	digitalWrite(FR_MOTOR_DIR_PIN, FR_BWD);
+
+// 	digitalWrite(BL_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(FL_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(BR_MOTOR_DIR_PIN, LOW);
+// 	digitalWrite(FR_MOTOR_DIR_PIN, LOW);
 	
 	analogWrite(BL_MOTOR_ENABLE_PIN, speed);
 	analogWrite(FL_MOTOR_ENABLE_PIN, speed);

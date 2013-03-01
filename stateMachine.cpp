@@ -179,6 +179,41 @@ void RunKeyboardDriveSM() {
     }
 }
 
+
+/*static void RunBrickBeaterSM() {
+    static State state = INITIALIZE;
+
+    switch(state) {
+	case INITIALIZE:
+	    //TODO correct this
+	    //Serial.println("in initialize");
+	    InitializeMotors();
+	    InitializeSensors();
+	    state = STOPPED;
+	    break;
+	case SEARCHING_FOR_OPP:
+	    if (TestOppLocated()) {
+		TurnTowardsOpp();
+	    }
+
+	    state = ALIGNING_OPP;
+	    break;
+	case ALIGNING_OPP:
+	    if (TestOppAligned()) {
+		StartChargeTimer();
+		
+	    }
+	    break;
+	case CHARGING_OPP;
+	    break;
+    }
+
+    
+}*/
+
+
+//-------------- Keyboard state machine functions
+
 bool TestMoveCommRecvd() {
     return KeyboardEvents_TestMoveCommRecvd();
 }
@@ -198,6 +233,8 @@ static bool TestMoveTimerExp() {
 
     return expired;
 }
+
+//----------------- Key
 
 /*---------------- Test Harness ---------------------------*/
 

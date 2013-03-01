@@ -23,12 +23,24 @@
 //motor pin mappings
 #define BR_MOTOR_DIR_PIN 2
 #define BR_MOTOR_ENABLE_PIN 3
-#define BL_MOTOR_DIR_PIN 4
-#define BL_MOTOR_ENABLE_PIN 5
-#define FR_MOTOR_DIR_PIN 7
-#define FR_MOTOR_ENABLE_PIN 6
+#define BL_MOTOR_DIR_PIN 4 //4
+#define BL_MOTOR_ENABLE_PIN 5 //5
+#define FR_MOTOR_DIR_PIN 7 //7
+#define FR_MOTOR_ENABLE_PIN 6 //6
 #define FL_MOTOR_DIR_PIN 8
 #define FL_MOTOR_ENABLE_PIN 9
+
+//settings to adjust for unknown motor polarities. high is forward, low is backward.
+
+#define BR_BWD (1-BR_FWD)
+#define BL_BWD (1-BL_FWD)
+#define FR_BWD (1-FR_FWD)
+#define FL_BWD (1-FL_FWD)
+
+#define BR_FWD LOW
+#define BL_FWD LOW
+#define FR_FWD HIGH
+#define FL_FWD HIGH
 
 /*---------------- Module Level Variables ---------------------------*/
 

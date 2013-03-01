@@ -24,8 +24,6 @@
 
 /*---------------- Main Code ---------------------------------*/
 
-static AF_DCMotor motor1(1, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
-//static AF_DCMotor motor2(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
 
 
 void setup() {
@@ -34,15 +32,22 @@ void setup() {
     TMRArd_InitTimer(TURN_TIMER, 0);
 
     Drive_InitMotors();
-    //pinMode(RIGHT_MOTORS_DIR_PIN, OUTPUT);
 
-    motor1.setSpeed(255);
-    //motor2.setSpeed(255);
+    
+    
 }
 
 void loop() {
+
+    //Drive_Stop();
+    //delay(300);
+    
+    //Drive_Move(BACK, 255);
+    
     
     RunStateMachine(KEYBOARD_DRIVE);
-   
+
+    //digitalWrite(BL_MOTOR_DIR_PIN, BR_FWD);
+    //analogWrite(BL_MOTOR_ENABLE_PIN, 255);
     
 }
