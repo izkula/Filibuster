@@ -16,6 +16,7 @@
 
 /*---------------- Includes ---------------------------------*/
 #include "stateMachine.h"
+#include "sensors.h"
 
 /*---------------- Module Public Functions ---------------------------*/
 
@@ -25,6 +26,9 @@ void RunStateMachine(Strategy s) {
     switch(s) {
 	case (KEYBOARD_DRIVE):
 	    RunKeyboardDriveSM();
+	    break;
+	case (SIMPLE_BRICK_BEATER):
+	   RunSimpleBrickBeaterSM();
 	    break;
 	default:
 	    RunKeyboardDriveSM();
@@ -179,6 +183,78 @@ void RunKeyboardDriveSM() {
     }
 }
 
+static void RunSimpleBrickBeaterSM() {
+    static State state = INITIALIZE;
+    static int angleToTarget = 0;
+
+    switch(state) {
+	case INITIALIZE:
+	    //TODO correct this
+	    InitializeMotors();
+	    InitializeSensors();
+	    state = SEARCHING_FOR_OPP;
+	    break;
+
+	case SEARCHING_FOR_OPP:
+	    angleToTarget = Sensors_AngleToBeacon();
+
+	    if (TestOppLocated()) {
+		Drive_Move(FORWARD, 100);
+		state = CHARGING;
+	    }
+
+	    state = CHARGING;
+	    break;
+
+	case CHARGING:
+	    angleToTarget = Sensors_AngleToBeacon();
+
+	    if (TestOppLost()) {
+		Drive_Turn(RIGHT, 100);
+		state = SEARCHING_FOR_OPP;
+	    }
+
+	    break;
+
+	default:
+	    Serial.println("Error! Received invalid state!");
+	    break;
+
+    }
+
+
+}
+
+/*static void RunBrickBeaterSM() {
+    static State state = INITIALIZE;
+
+    switch(state) {
+	case INITIALIZE:
+	    //TODO correct this
+	    //Serial.println("in initialize");
+	    InitializeMotors();
+	    InitializeSensors();
+	    state = STOPPED;
+	    break;
+	case SEARCHING_FOR_OPP:
+	    if (TestOppLocated()) {
+		TurnTowardsOpp();
+	    }
+
+	    state = ALIGNING_OPP;
+	    break;
+	case ALIGNING_OPP:
+	    if (TestOppAligned()) {
+		StartChargeTimer();
+
+	    }
+	    break;
+	case CHARGING_OPP;
+	    break;
+    }
+
+
+}*/
 
 /*static void RunBrickBeaterSM() {
     static State state = INITIALIZE;
@@ -212,7 +288,7 @@ void RunKeyboardDriveSM() {
 }*/
 
 
-//-------------- Keyboard state machine functions
+//-------------- Keyboard state machine functions -------------------
 
 bool TestMoveCommRecvd() {
     return KeyboardEvents_TestMoveCommRecvd();
@@ -234,7 +310,24 @@ static bool TestMoveTimerExp() {
     return expired;
 }
 
-//----------------- Key
+//-------------------Simple brick beater state machine functions -------------
+
+bool TestOppLocated() {
+    if (Sensors_AngleToBeacon == 0) {
+	return true;
+    }
+
+    else return false;
+}
+
+bool TestOppLost() {
+    if (Sensors_AngleToBeacon != 0) {
+	return true;
+    }
+
+    else return false;
+}
+
 
 /*---------------- Test Harness ---------------------------*/
 

@@ -9,7 +9,7 @@ typedef enum {
 } State;
 
 typedef enum {
-    KEYBOARD_DRIVE, KEYBOARD_EVENTS, WALL_HUGGER
+    KEYBOARD_DRIVE, SIMPLE_BRICK_BEATER, WALL_HUGGER
 } Strategy;
 
 typedef enum {

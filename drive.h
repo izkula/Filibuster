@@ -21,14 +21,14 @@
 /*---------------- Module Level Defines ---------------------------------*/
 
 //motor pin mappings
-#define BR_MOTOR_DIR_PIN 2
-#define BR_MOTOR_ENABLE_PIN 3
+#define BR_MOTOR_DIR_PIN 10 //2
+#define BR_MOTOR_ENABLE_PIN 11 //3
 #define BL_MOTOR_DIR_PIN 4 //4
 #define BL_MOTOR_ENABLE_PIN 5 //5
 #define FR_MOTOR_DIR_PIN 7 //7
 #define FR_MOTOR_ENABLE_PIN 6 //6
-#define FL_MOTOR_DIR_PIN 8
-#define FL_MOTOR_ENABLE_PIN 9
+#define FL_MOTOR_DIR_PIN 8 //8
+#define FL_MOTOR_ENABLE_PIN 9 //9
 
 //settings to adjust for unknown motor polarities. high is forward, low is backward.
 
@@ -55,6 +55,9 @@ void Drive_Move(Direction dir, int speed);
 
 /**Commands the motors to stop*/
 void Drive_Stop();
+
+/** Given an angle to a target, turns towards that target */
+void Drive_TurnTowardsTarget(int angle);
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
 

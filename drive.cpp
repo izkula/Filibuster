@@ -127,6 +127,21 @@ void Drive_Stop() {
     digitalWrite(FR_MOTOR_ENABLE_PIN, LOW);
 
 }
+
+void Drive_TurnTowardsTarget(int angle, int speed) {
+    if (0 < angle && angle <= 180) {
+	Drive_Turn(RIGHT, speed);
+    }
+
+    else if (180 < angle && angle < 360) {
+	Drive_Turn(LEFT, speed);
+    }
+
+    else {
+	Serial.println("Invalid angle passed to Drive_TurnTowardsTarget()!");
+    }
+}
+
 /*---------------- Module Private Functions ---------------------------*/
 
 /*---------------- Test Harness ---------------------------*/

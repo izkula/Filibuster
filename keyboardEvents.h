@@ -20,11 +20,7 @@
 
 /*---------------- Module Level Defines ---------------------------------*/
 
-//37-40 are the ascii characters for the keyboard arrows.
-#define LEFT_KEY 'a'
-#define UP_KEY 'w'
-#define RIGHT_KEY 'd'
-#define DOWN_KEY 's'
+
 
 /*---------------- Module Level Variables ---------------------------*/
 static char comm = 0; //the command passed in by the keyboard

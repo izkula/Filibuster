@@ -34,9 +34,13 @@ void RunStateMachine(Strategy s);
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
 static void RunKeyboardDriveSM();
-static void RunBrickBeaterSM();
+static void RunSimpleBrickBeaterSM();
+
 static bool TestMoveCommRecvd();
 static bool TestTurnCommRecvd();
 static bool TestTurnTimerExp();
 static bool TestMoveTimerExp();
+
+bool TestOppLocated();
+bool TestOppLost();
 
