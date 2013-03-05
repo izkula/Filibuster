@@ -16,7 +16,7 @@
  **************************************************************/
 
 /*---------------- Includes ---------------------------------*/
-#include "sensors.h"
+#include "beaconSense.h"
 #include "drive.h"
 #include "navigation.h"
 #include "keyboardEvents.h"

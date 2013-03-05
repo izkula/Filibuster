@@ -16,7 +16,6 @@
 
 /*---------------- Includes ---------------------------------*/
 #include "stateMachine.h"
-#include "sensors.h"
 
 /*---------------- Module Public Functions ---------------------------*/
 

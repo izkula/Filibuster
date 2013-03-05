@@ -16,6 +16,11 @@ typedef enum {
     RIGHT, LEFT, FORWARD, BACK, NONE
 } Direction;
 
+//To be used to identify the targets that are visible to the beacon sensor
+// static typedef enum {
+//         NEITHER, ENEMY, SEQUESTER, BOTH
+// } VisibleTarget;
+
 typedef struct {
     char c;
     int time;

@@ -19,7 +19,7 @@
 #include "definitions.h"
 #include <Timers.h>
 #include "drive.h"
-#include "sensors.h"
+#include "beaconSense.h"
 
 
 /*---------------- Main Code ---------------------------------*/
@@ -33,7 +33,7 @@ void setup() {
 
     Drive_InitMotors();
 
-    Sensors_Initialize();
+    BeaconSense_Initialize();
 
     Drive_Stop();
     
