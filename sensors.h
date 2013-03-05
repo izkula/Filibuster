@@ -24,6 +24,7 @@
 int Sensors_AngleToBeacon(void);
 void Sensors_Initialize();
 int isEnemyInFrontBeacon();
+int PULSEFREQ_frequency(void);
 
 /*---------------- Module Private Function Prototypes ---------------------------*/
 

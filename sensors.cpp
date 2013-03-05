@@ -313,16 +313,18 @@ int PULSEFREQ_frequency(void) {
     }
 }
 
+
+//TODO: changed it to ignore everything but enemy for beating brick. Change it back.
 int PULSEFREQ_beacontype(void) {
     int freq = PULSEFREQ_frequency();
     
     if (freq == BOTH) {
-	return BOTH;
+	return NEITHER;
     }
     if ((830 < freq && freq < 870)) { // || (320 < freq && 360 > freq)) {
 	    return ENEMY;
     } else if ((3900 < freq && freq < 4100)) {   //  || (1900 < freq && 2100 > freq)) {
-	    return SEQUESTER;
+	    return NEITHER;
     } else {
 	return NEITHER;
     }
